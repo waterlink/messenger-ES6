@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JavaScriptLibraryMappings">
+    <file url="file://$PROJECT_DIR$" libraries="{messenger/node_modules}" />
+    <file url="file://$PROJECT_DIR$/spec" libraries="{jasmine, jasmine-DefinitelyTyped, jquery-DefinitelyTyped, messenger/node_modules}" />
+    <file url="file://$PROJECT_DIR$/src" libraries="{jquery-DefinitelyTyped, messenger/node_modules}" />
+    <file url="PROJECT" libraries="{jasmine, jasmine-DefinitelyTyped, jquery-DefinitelyTyped}" />
+    <includedPredefinedLibrary name="Node.js Core" />
+  </component>
+</project>

@@ -1,53 +1,70 @@
 import {SignUpPage} from "../src/SignUpPage";
+import {InMemoryUsersBackend} from "../src/InMemoryUsersBackend";
+import {User} from "../src/User";
 
 export class Fixture {
 
     constructor(application) {
-        this.application = application;
         this.page = null;
         this.container = null;
+        this.usersBackend = new InMemoryUsersBackend();
+        this.application = application;
+        this.application.launchApp();
+    }
+
+    givenUserExists(name, email, password) {
+        this.usersBackend.createUser(new User(name, email, password));
     }
 
     givenUserOnSignupPage() {
-        this.application.launchApp();
-        this.page = new SignUpPage(this.application.container);
+        this.page = new SignUpPage(this.application.container, {
+            usersBackend: this.usersBackend,
+        });
+
         this.page.render();
         this.container = this.page.container;
 
-        expect(this.container.getAttribute("active-page"))
-            .toEqual("signup-page");
+        this.assertUserOnThePage("signup-page");
     }
 
-    whenUserEntersText(query, text) {
-        let element = this.query(query);
-        expect(element).not.toBeNull();
+    whenUserEntersText(selector, text) {
+        let element = this.query(selector);
         element.setAttribute("value", text);
         expect(element.getAttribute("value")).toEqual(text);
     }
 
-    whenUserClicksOn(query) {
-        let element = this.query(query);
-        expect(element).not.toBeNull();
-        element.dispatchEvent(this.createEvent("click"));
+    whenUserClicksOn(selector) {
+        this.query(selector)
+            .dispatchEvent(this.createEvent("click"));
     }
 
-    thenUserIsNotOnSignupPage() {
-        expect(this.container.getAttribute("active-page"))
-            .not.toEqual("signup-page");
+    thenUserIsOnSignupPage() {
+        this.assertUserOnThePage("signup-page");
     }
 
     thenUserIsOnHomePage() {
-        expect(this.container.getAttribute("active-page"))
-            .toEqual("home-page");
+        this.assertUserOnThePage("home-page");
     }
 
     thenUserSeesTheirName(name) {
-        let element = this.query(".my-name");
-        expect(element.textContent).toEqual(name);
+        expect(this.query(".my-name").textContent)
+            .toEqual(name);
     }
 
-    query(query) {
-        return this.container.querySelector(query);
+    thenUserSeesError(message) {
+        expect(this.query(".error").textContent)
+            .toEqual(message);
+    }
+
+    assertUserOnThePage(name) {
+        expect(this.container.getAttribute("active-page"))
+            .toEqual(name);
+    }
+
+    query(selector) {
+        let element = this.container.querySelector(selector);
+        expect(element).not.toBeNull(`(queried '${selector}')`);
+        return element;
     }
 
     createEvent(name) {
